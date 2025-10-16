@@ -3,6 +3,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { sequelizeCon } from "./src/init/dbConnection.js";
 import mediaRouter from "./src/routes/media.router.js";
+import newArrivalRouter from './src/routes/newArrivals.router.js'
+import catalogRouter from './src/routes/catalog.router.js'
+import accessoryRouter from './src/routes/accessory.router.js'
+import bestSellerRouter from './src/routes/bestSeller.router.js'
 
 dotenv.config();
 
@@ -31,8 +35,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Serve uploaded files publicly
-// Any uploaded image/video can be accessed like: http://localhost:3085/uploads/<filename>
 app.use("/uploads", express.static("uploads"));
 
 // ✅ Root endpoint (for API health check)
@@ -45,12 +47,11 @@ app.get("/", (req, res) => {
   });
 });
 
-// ✅ Media routes
-// Handles: 
-//   - POST /api/media/upload  (upload or update image/video)
-//   - GET  /api/media/latest  (fetch latest media)
 app.use("/api", mediaRouter);
-
+app.use("/api", newArrivalRouter);
+app.use("/api", catalogRouter)
+app.use('/api', accessoryRouter);
+app.use("/api", bestSellerRouter);
 
 // ✅ Global error handler (optional but recommended)
 app.use((err, req, res, next) => {

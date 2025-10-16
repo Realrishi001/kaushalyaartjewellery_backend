@@ -42,6 +42,6 @@ router.post(
 );
 
 // ✅ Get Latest Media
-router.get("/media/latest", getMedia);
+router.get("/media/latest", getMedia);  
 
 export default router;
