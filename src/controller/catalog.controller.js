@@ -174,3 +174,81 @@ export const getAllCatalogs = async (req, res) => {
     });
   }
 };
+
+
+export const saveOrUpdateProduct = async (req, res) => {
+  try {
+    const {
+      catalogName,
+      productName,
+      productImage,
+      realPrice,
+      discountPrice,
+      polishType,
+      size,
+      aboutProduct,
+    } = req.body;
+
+    if (!catalogName || !productName) {
+      return res.status(400).json({
+        success: false,
+        message: "Both catalogName and productName are required",
+      });
+    }
+
+    // ✅ Step 1: Find the catalog by name
+    const catalog = await Catalog.findOne({ where: { catalogName } });
+
+    if (!catalog) {
+      return res.status(404).json({
+        success: false,
+        message: `Catalog '${catalogName}' not found`,
+      });
+    }
+
+    // ✅ Step 2: If the catalog already has this product, update it
+    if (catalog.productName === productName) {
+      await catalog.update({
+        productImage,
+        realPrice,
+        discountPrice,
+        polishType,
+        size,
+        aboutProduct,
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: `Product '${productName}' updated successfully in catalog '${catalogName}'`,
+        data: catalog,
+      });
+    }
+
+    // ✅ Step 3: If productName is different → create new catalog entry for that product
+    const newProduct = await Catalog.create({
+      catalogName,
+      catalogDescription: catalog.catalogDescription,
+      catalogImage: catalog.catalogImage,
+      productName,
+      productImage,
+      realPrice,
+      discountPrice,
+      polishType,
+      size,
+      aboutProduct,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: `Product '${productName}' added successfully to catalog '${catalogName}'`,
+      data: newProduct,
+    });
+  } catch (error) {
+    console.error("Error saving/updating product:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
