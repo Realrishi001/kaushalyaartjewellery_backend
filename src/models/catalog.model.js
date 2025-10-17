@@ -18,7 +18,7 @@ const Catalog = sequelizeCon.define(
     },
     catalogImage: {
       type: DataTypes.STRING,
-      allowNull: true, // ✅ New field for catalog image URL
+      allowNull: true,
     },
     productName: {
       type: DataTypes.STRING,
@@ -47,6 +47,11 @@ const Catalog = sequelizeCon.define(
     aboutProduct: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    quantityAvailable: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0, // ✅ New field for available quantity
     },
   },
   {

@@ -1,4 +1,5 @@
 import { Catalog } from "../models/catalog.model.js";
+import { Op } from "sequelize";
 
 /**
  * ✅ Create a new catalog (with name, description & image)
@@ -175,7 +176,6 @@ export const getAllCatalogs = async (req, res) => {
   }
 };
 
-
 export const saveOrUpdateProduct = async (req, res) => {
   try {
     const {
@@ -187,8 +187,10 @@ export const saveOrUpdateProduct = async (req, res) => {
       polishType,
       size,
       aboutProduct,
+      quantityAvailable, // ✅ Added field
     } = req.body;
 
+    // ✅ Basic validation
     if (!catalogName || !productName) {
       return res.status(400).json({
         success: false,
@@ -206,25 +208,37 @@ export const saveOrUpdateProduct = async (req, res) => {
       });
     }
 
-    // ✅ Step 2: If the catalog already has this product, update it
-    if (catalog.productName === productName) {
-      await catalog.update({
+    // ✅ Step 2: Check if this product already exists (based on catalog + productName)
+    const existingProduct = await Catalog.findOne({
+      where: {
+        catalogName,
+        productName,
+      },
+    });
+
+    // ✅ Step 3: If exists, update it
+    if (existingProduct) {
+      await existingProduct.update({
         productImage,
         realPrice,
         discountPrice,
         polishType,
         size,
         aboutProduct,
+        quantityAvailable:
+          quantityAvailable !== undefined && quantityAvailable !== null
+            ? quantityAvailable
+            : existingProduct.quantityAvailable, // ✅ Update only if provided
       });
 
       return res.status(200).json({
         success: true,
         message: `Product '${productName}' updated successfully in catalog '${catalogName}'`,
-        data: catalog,
+        data: existingProduct,
       });
     }
 
-    // ✅ Step 3: If productName is different → create new catalog entry for that product
+    // ✅ Step 4: Else create new product under same catalog
     const newProduct = await Catalog.create({
       catalogName,
       catalogDescription: catalog.catalogDescription,
@@ -236,6 +250,10 @@ export const saveOrUpdateProduct = async (req, res) => {
       polishType,
       size,
       aboutProduct,
+      quantityAvailable:
+        quantityAvailable !== undefined && quantityAvailable !== null
+          ? quantityAvailable
+          : 0, // ✅ Default to 0 if not provided
     });
 
     return res.status(201).json({
@@ -244,10 +262,61 @@ export const saveOrUpdateProduct = async (req, res) => {
       data: newProduct,
     });
   } catch (error) {
-    console.error("Error saving/updating product:", error);
+    console.error("❌ Error saving/updating product:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+
+export const getStockClearanceProducts = async (req, res) => {
+  try {
+    // Fetch all products where catalogName matches "Stock Clearance Sale"
+    const clearanceProducts = await Catalog.findAll({
+      where: {
+        catalogName: {
+          [Op.like]: "%Stock Clearance Sale%", // case-insensitive partial match
+        },
+      },
+      attributes: [
+        "id",
+        "catalogName",
+        "catalogDescription",
+        "catalogImage",
+        "productName",
+        "productImage",
+        "realPrice",
+        "discountPrice",
+        "polishType",
+        "size",
+        "aboutProduct",
+        "quantityAvailable",
+        "createdAt",
+        "updatedAt",
+      ],
+      order: [["createdAt", "DESC"]], // latest products first
+    });
+
+    if (!clearanceProducts.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No products found under 'Stock Clearance Sale'.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: clearanceProducts.length,
+      data: clearanceProducts,
+    });
+  } catch (error) {
+    console.error("Error fetching Stock Clearance products:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error while fetching Stock Clearance products.",
       error: error.message,
     });
   }

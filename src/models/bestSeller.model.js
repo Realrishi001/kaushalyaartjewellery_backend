@@ -18,14 +18,14 @@ const BestSeller = sequelizeCon.define(
     },
     bestSellerImage: {
       type: DataTypes.STRING,
-      allowNull: true, // ✅ Optional main image for the bestseller category
+      allowNull: true,
     },
     productName: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     productImages: {
-      type: DataTypes.JSON, // ✅ stores multiple image URLs
+      type: DataTypes.JSON,
       allowNull: true,
     },
     realPrice: {
@@ -47,6 +47,11 @@ const BestSeller = sequelizeCon.define(
     aboutProduct: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    quantityAvailable: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0, // ✅ New stock tracking column
     },
   },
   {

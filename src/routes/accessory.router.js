@@ -15,4 +15,7 @@ router.post("/accessory/save", saveOrUpdateAccessoryProduct);
 // Delete accessory
 router.delete("/accessory/:id", deleteAccessory);
 
+router.post("/accessory/save-product", saveOrUpdateAccessoryProduct);
+
+
 export default router;

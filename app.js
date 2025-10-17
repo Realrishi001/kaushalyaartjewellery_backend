@@ -7,6 +7,8 @@ import newArrivalRouter from './src/routes/newArrivals.router.js'
 import catalogRouter from './src/routes/catalog.router.js'
 import accessoryRouter from './src/routes/accessory.router.js'
 import bestSellerRouter from './src/routes/bestSeller.router.js'
+import userRouter from './src/routes/auth.router.js'
+import productRouter from './src/routes/product.router.js'
 
 dotenv.config();
 
@@ -52,6 +54,8 @@ app.use("/api", newArrivalRouter);
 app.use("/api", catalogRouter)
 app.use('/api', accessoryRouter);
 app.use("/api", bestSellerRouter);
+app.use("/api", userRouter);
+app.use("/api", productRouter);
 
 // ✅ Global error handler (optional but recommended)
 app.use((err, req, res, next) => {

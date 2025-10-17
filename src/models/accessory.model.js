@@ -18,7 +18,7 @@ const Accessory = sequelizeCon.define(
     },
     accessoryImage: {
       type: DataTypes.STRING,
-      allowNull: true, // ✅ new field for accessory category image
+      allowNull: true,
     },
     productName: {
       type: DataTypes.STRING,
@@ -47,6 +47,11 @@ const Accessory = sequelizeCon.define(
     aboutProduct: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    quantityAvailable: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0, // ✅ Default stock count
     },
   },
   {

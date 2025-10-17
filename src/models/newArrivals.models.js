@@ -20,6 +20,11 @@ const NewArrival = sequelizeCon.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    quantityAvailable: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0, // ✅ New field for stock tracking
+    },
   },
   {
     timestamps: true,
