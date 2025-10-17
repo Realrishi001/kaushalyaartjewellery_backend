@@ -321,3 +321,33 @@ export const getStockClearanceProducts = async (req, res) => {
     });
   }
 };
+
+
+export const getAllCatalogProducts = async (req, res) => {
+  try {
+    const products = await Catalog.findAll({
+      order: [["createdAt", "DESC"]], // optional: latest first
+    });
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No products found in the catalog.",
+        data: [],
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "All catalog products fetched successfully.",
+      data: products,
+    });
+  } catch (error) {
+    console.error("Error fetching catalog products:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error while fetching catalog products.",
+      error: error.message,
+    });
+  }
+};

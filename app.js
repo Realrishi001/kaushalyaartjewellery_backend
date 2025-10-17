@@ -9,6 +9,8 @@ import accessoryRouter from './src/routes/accessory.router.js'
 import bestSellerRouter from './src/routes/bestSeller.router.js'
 import userRouter from './src/routes/auth.router.js'
 import productRouter from './src/routes/product.router.js'
+import orderRouter from './src/routes/order.router.js'
+import dashbaordRotuer from './src/routes/dashboard.router.js'
 
 dotenv.config();
 
@@ -56,6 +58,8 @@ app.use('/api', accessoryRouter);
 app.use("/api", bestSellerRouter);
 app.use("/api", userRouter);
 app.use("/api", productRouter);
+app.use("/api", orderRouter);
+app.use("/api", dashbaordRotuer);
 
 // ✅ Global error handler (optional but recommended)
 app.use((err, req, res, next) => {
